@@ -20,7 +20,6 @@ ENV JAVA_HOME C:\\java-${JAVA_ZIP_VERSION}.ojdkbuild.windows.x86_64
 COPY Packages/Microsoft-NanoServer-IIS-Package.cab C:/Windows/Temp
 COPY Packages/Microsoft-NanoServer-IIS-Package_en-US.cab C:/Windows/Temp
 COPY unattend.xml C:/Windows/Temp
-COPY jetrix-0.2.3.zip C:/Windows/Temp
 COPY tetriweb.zip C:/Windows/Temp
 
 WORKDIR C:/Windows/Temp
