@@ -25,7 +25,7 @@ COPY tetriweb.zip C:/Windows/Temp
 WORKDIR C:/Windows/Temp
 RUN Invoke-WebRequest $('https://github.com/ojdkbuild/ojdkbuild/releases/download/{0}/java-{1}.ojdkbuild.windows.x86_64.zip' -f $env:JAVA_VERSION, $env:JAVA_ZIP_VERSION) -UserAgent 'NativeHost' -OutFile 'openjdk.zip' -UseBasicParsing ; \
     if ((Get-FileHash openjdk.zip -Algorithm sha256).Hash -ne $env:JAVA_SHA256) {exit 1} ; \
-    Expand-Archive openjdk.zip -DestinationPath C:\ ; \
+    Expand-Archive openjdk.zip -DestinationPath C:/ ; \
     $env:PATH = '{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH ; \
     Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\\' -Name Path -Value $env:PATH ; \
     Remove-Item -Path openjdk.zip
