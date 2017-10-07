@@ -1,14 +1,14 @@
 FROM microsoft/nanoserver:latest
 
-LABEL title "Jetrix Tetrinet Server Docker Image"
-LABEL maintainer "Carlos Milán Figueredo"
-LABEL email "cmilanf@hispamsx.org"
-LABEL version "1.0"
-LABEL contrib1 "Jetrix - http://jetrix.sourceforge.net/"
-LABEL url "https://calnus.com"
-LABEL twitter "@cmilanf"
-LABEL usage "docker run -d -p 31457:31457 -p 8080:8080 -p 80:80 -h myhostname.domain.com --name jetrix cmilanf/jetrix"
-LABEL thanksto "Beatriz Sebastián Peña"
+LABEL title="Jetrix Tetrinet Server Docker Image" \
+    maintainer="Carlos Milán Figueredo" \
+    email="cmilanf@hispamsx.org" \
+    version="1.0" \
+    contrib1="Jetrix - http://jetrix.sourceforge.net/" \
+    url="https://calnus.com" \
+    twitter="@cmilanf" \
+    usage="docker run -d -p 31457:31457 -p 8080:8080 -p 80:80 -h myhostname.domain.com --name jetrix cmilanf/jetrix" \
+    thanksto="Beatriz Sebastián Peña"
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; $VerbosePreference = 'Continue'; "]
 
