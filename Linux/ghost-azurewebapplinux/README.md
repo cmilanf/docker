@@ -15,7 +15,7 @@ This folder has all the needed items to perform a successful implementation of [
     * Azure AD Service Principal is created with permissions in the Azure WebApp.
   * **build.bat**. A simple build script that replaces {{TAG}} in the Dockerfile by the specified version. This way official Ghost image and this one are synced.
   * **convertLetsEncryptToPfx.bash**. Let's Encrypt generates PEM files, but Azure only accepts PFX. This scripts makes this conversion.
-  * **[fart.exe]**(http://fart-it.sourceforge.net/). FART is *Find And Replace Text* command line utility; somewhat a *grep*-like utility for win32. It is the key of the *build.bat* file.
+  * **fart.exe**. [FART]((http://fart-it.sourceforge.net/)) is *Find And Replace Text* command line utility; somewhat a *grep*-like utility for win32. It is the key of the *build.bat* file.
   * **http_custom_errors.zip**. Several 404 and 500 custom error pages that are optional to use.
   * **init-container.bash**. This is the script called by base image ENTRYPOINT (*/usr/local/bin/docker-entrypoint.sh*). It performs the following tasks:
     * Creates needed directories in persistent storage.
