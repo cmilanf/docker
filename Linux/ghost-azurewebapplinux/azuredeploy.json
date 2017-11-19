@@ -1,0 +1,428 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "servicePlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Azure App Service Plan"
+      }
+    },
+    "webAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Azure web app"
+      }
+    },
+    "siteCustomHostname": {
+        "type": "string",
+        "metadata": {
+            "description": "Custom hostname for the Azure WebApp. DNS validation must have been created beforehand"
+        } 
+    },
+    "dockerCustomImageName": {
+        "type": "string",
+        "defaultValue": "cmilanf/ghost-azurewebapplinux:1.17.2",
+        "metadata": {
+            "description": "Custom Docker Image"
+        }
+    },
+    "dbType": {
+      "type": "string",
+      "defaultValue": "mysql",
+      "allowedValues": [
+        "mysql",
+        "sqlite"
+      ],
+      "metadata": {
+        "description": "Database type for Ghost blog. If MySQL is selected additional configuration is needed, but SQLITE IS NOT SUPPORTED WITH AZURE WEBAPP LINUX due to persistent storage being CIFS."
+      }
+    },
+    "mysqlVersion": {
+      "type": "string",
+      "allowedValues": [
+          "5.6",
+          "5.7"
+      ],
+      "defaultValue": "5.7",
+      "metadata": {
+          "description": "MySQL version"
+      }
+    },
+    "dbHost":{
+      "type": "string",
+      "metadata": {
+        "description": "MySQL server name. Ej: calnus. The template will automatically add .mysql.database.azure.com to this parameter."
+      }
+    },
+    "dbName":{
+      "type": "string",
+      "metadata": {
+        "description": "MySQL database name."
+      }
+    },
+    "dbUser":{
+      "type": "string",
+      "metadata": {
+        "description": "MySQL database username."
+      }
+    },
+    "dbPass":{
+      "type": "securestring",
+      "metadata": {
+        "description": "MySQL database password."
+      }
+    },
+    "dbDTU": {
+      "type": "int",
+      "allowedValues": [
+          50,
+          100
+      ],
+      "defaultValue": 50,
+      "metadata": {
+          "description": "Azure database for MySQL pricing tier : 50 DTU , 100 DTU"
+      }
+    },
+    "dbSkuName": {
+      "type": "string",
+      "allowedValues": [
+          "MYSQLB100",
+          "MYSQLB50"
+      ],
+      "defaultValue": "MYSQLB100",
+      "metadata": {
+          "description": "Azure database for MySQL sku name : MYSQLB100 (Basic 100 DTU tier) or MYSQLB50 (Basic 50 DTU tier)"
+      }
+    },
+    "dbSkuSizeMB": {
+      "type": "int",
+      "allowedValues": [
+          102400,
+          51200
+      ],
+      "defaultValue": 51200,
+      "metadata": {
+          "description": "Azure database for MySQL Sku Size "
+      }
+    },
+    "dbSkuTier": {
+      "type": "string",
+      "allowedValues": [
+          "Basic"
+      ],
+      "defaultValue": "Basic",
+      "metadata": {
+          "description": "Azure database for MySQL pricing tier"
+      }
+    },
+    "smtpService": {
+        "type": "string",
+        "defaultValue": "SendGrid",
+        "metadata": {
+            "description": "Updated list available at https://github.com/nodemailer/nodemailer/blob/0.7/lib/wellknown.js"
+        }
+    },
+    "smtpFrom": {
+        "type": "string",
+        "defaultValue": "myEmail@mydomain.com",
+        "metadata": {
+            "description": "SMTP from address"
+        }
+    },
+    "smtpUser": {
+        "type": "string",
+        "defaultValue": "myUsername",
+        "metadata": {
+            "description": "SMTP authentication username"
+        }
+    },
+    "smtpPassword": {
+        "type": "securestring",
+        "metadata": {
+            "description": "SMTP password"
+        }
+    },
+    "azureAdSpUrl": {
+        "type": "string",
+        "metadata": {
+            "description": "Azure AD Application URL"
+        }
+    },
+    "azureAdSpPassword": {
+        "type": "securestring",
+        "metadata": {
+            "description": "Azure AD application password"
+        }
+    },
+    "azureAdSpTenantId": {
+        "type": "string",
+        "metadata": {
+            "description": "Azure AD Tenant ID"
+        }
+    },
+    "letsEncryptEmail": {
+        "type": "string",
+        "metadata": {
+            "description": "Let's Encrypt emai account"
+        }
+    },
+    "httpCustomErrors": {
+        "type": "string",
+        "allowedValues": [
+          "true",
+          "false"
+      ],
+      "defaultValue": "false",
+      "metadata": {
+        "description": "Enable NGINX friendly 404 and 50x error"
+      }
+    }
+  },
+  "variables": {
+    "creditTo": "https://raw.githubusercontent.com/prashanthmadi/azure-ghost/master/azuredeploy.json",
+    "WEBSITES_CONTAINER_START_TIME_LIMIT": 600,
+    "WEBSITES_ENABLE_APP_SERVICE_STORAGE": true,
+    "WEBSITES_PORT": 80
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites",
+      "name": "[parameters('webAppName')]",
+      "apiVersion": "2016-03-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', parameters('servicePlanName'))]",
+        "[concat('Microsoft.DBforMySQL/servers/', parameters('dbHost'),'/databases/',parameters('dbName'))]"
+      ],
+      "properties": {
+        "name": "[parameters('webAppName')]",
+        "serverFarmId": "[parameters('servicePlanName')]",
+        "hostingEnvironment": "",
+        "siteConfig": {
+          "alwaysOn": true,
+          "connectionStrings": [{
+            "name": "mysqlConnection",
+            "ConnectionString": "[concat('Database=', parameters('dbName'), ';Data Source=', parameters('dbHost'),'.mysql.database.azure.com;User Id=',parameters('dbUser'),'@',parameters('dbHost') ,';Password=',parameters('dbPass'))]",
+            "type": "MySQL"
+          }],
+          "appSettings": [
+            {
+              "name": "DOCKER_CUSTOM_IMAGE_NAME",
+              "value": "[parameters('dockerCustomImageName')]"
+            },
+            {
+              "name": "WEBSITES_CONTAINER_START_TIME_LIMIT",
+              "value": "[variables('WEBSITES_CONTAINER_START_TIME_LIMIT')]"
+            },
+            {
+              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+              "value": "[variables('WEBSITES_ENABLE_APP_SERVICE_STORAGE')]"
+            },
+            {
+              "name": "WEBSITES_PORT",
+              "value": "[variables('WEBSITES_PORT')]"
+            },
+            {
+              "name": "WEBAPP_CUSTOM_HOSTNAME",
+              "value": "[parameters('siteCustomHostname')]"
+            },
+            {
+              "name": "GHOST_CONTENT",
+              "value": "/home/site/wwwroot"
+            },
+            {
+              "name": "GHOST_URL",
+              "value": "[concat('https://',parameters('siteCustomHostname'))]"
+            },
+            {
+              "name": "SMTP_FROM",
+              "value": "[parameters('smtpFrom')]"
+            },
+            {
+              "name": "SMTP_SERVICE",
+              "value": "[parameters('smtpService')]"
+            },
+            {
+              "name": "SMTP_USER",
+              "value": "[parameters('smtpUser')]"
+            },
+            {
+              "name": "SMTP_PASSWORD",
+              "value": "[parameters('smtpPassword')]"
+            },
+            {
+              "name": "WEBAPP_NAME",
+              "value": "[parameters('webAppName')]"
+            },
+            {
+              "name": "RESOURCE_GROUP",
+              "value": "[resourceGroup().Name]"
+            },
+            {
+              "name": "AZUREAD_SP_URL",
+              "value": "[parameters('azureAdSpUrl')]"
+            },
+            {
+              "name": "AZUREAD_SP_PASSWORD",
+              "value": "[parameters('azureAdSpPassword')]"
+            },
+            {
+              "name": "AZUREAD_SP_TENANTID",
+              "value": "[parameters('azureAdSpTenantId')]"
+            },
+            {
+              "name": "LETSENCRYPT_EMAIL",
+              "value": "[parameters('letsEncryptEmail')]"
+            },
+            {
+              "name": "DB_TYPE",
+              "value": "[parameters('dbType')]"
+            },
+            {
+              "name": "DB_HOST",
+              "value": "[concat(parameters('dbHost') ,'.mysql.database.azure.com')]"
+            },
+            {
+              "name": "DB_NAME",
+              "value": "[parameters('dbName')]"
+            },
+            {
+              "name": "DB_USER",
+              "value": "[concat(parameters('dbUser'),'@',parameters('dbHost'))]"
+            },
+            {
+              "name": "DB_PASS",
+              "value": "[parameters('dbPass')]"
+            },
+            {
+              "name": "HTTP_CUSTOM_ERRORS",
+              "value": "[parameters('httpCustomErrors')]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/hostnameBindings",
+      "name": "[concat(parameters('webAppName'), '/', parameters('siteCustomHostname'))]",
+      "apiVersion": "2016-03-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Web/sites/',parameters('webAppName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/hostnameBindings",
+      "name": "[concat(parameters('webAppName'), '/', 'www.', parameters('siteCustomHostname'))]",
+      "apiVersion": "2016-03-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Web/sites/',parameters('webAppName'))]",
+        "[concat('Microsoft.Web/sites/',parameters('webAppName'),'/hostnameBindings/',parameters('siteCustomHostname'))]"
+      ]
+    },
+    {
+      "apiVersion": "2016-03-01",
+      "name": "[concat(parameters('webAppName'), '/', 'logs')]",
+      "type": "Microsoft.Web/sites/config",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/Sites', parameters('webAppName'))]"
+      ],
+      "properties": {
+        "httpLogs": {
+          "fileSystem": {
+            "retentionInMb": 35,
+            "retentionInDays": 30,
+            "enabled": true
+          },
+          "azureBlobStorage": {
+            "sasUrl": null,
+            "retentionInDays": 30,
+            "enabled": false
+          }
+        },
+        "failedRequestsTracing": {
+          "enabled": false
+        },
+        "detailedErrorMessages": {
+          "enabled": false
+        }
+      }
+    },
+    {
+      "apiVersion": "2016-09-01",
+      "name": "[parameters('servicePlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "name": "[parameters('servicePlanName')]",
+        "workerSizeId": "1",
+        "reserved": true,
+        "numberOfWorkers": "1",
+        "hostingEnvironment": ""
+      },
+      "sku": {
+        "Tier": "Standard",
+        "Name": "S1"
+      },
+      "kind": "linux"
+    },
+    {
+      "apiVersion": "2016-02-01-privatepreview",
+      "kind": "",
+      "location": "[resourceGroup().location]",
+      "name": "[parameters('dbHost')]",
+      "condition": "[equals(parameters('dbType'),'mysql')]",
+      "properties": {
+        "version": "[parameters('mysqlVersion')]",
+        "administratorLogin": "[parameters('dbUser')]",
+        "administratorLoginPassword": "[parameters('dbPass')]",
+        "storageMB": "[parameters('dbSkuSizeMB')]",
+        "sslEnforcement": "Disabled"
+      },
+      "sku": {
+        "name": "[parameters('dbSkuName')]",
+        "tier": "[parameters('dbSkuTier')]",
+        "capacity": "[parameters('dbDTU')]",
+        "size": "[parameters('dbSkuSizeMB')]",
+        "family": "SkuFamily"
+      },
+      "type": "Microsoft.DBforMySQL/servers",
+      "resources": [
+        {
+          "type": "firewallrules",
+          "condition": "[equals(parameters('dbType'),'mysql')]",
+          "apiVersion": "2016-02-01-privatepreview",
+          "dependsOn": [
+            "[concat('Microsoft.DBforMySQL/servers/', parameters('dbHost'))]"
+          ],
+          "location": "[resourceGroup().location]",
+          "name": "AllAllowed",
+          "properties": {
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "255.255.255.255"
+          }
+        },
+        {
+          "name": "[parameters('dbName')]",
+          "type": "databases",
+          "condition": "[equals(parameters('dbType'),'mysql')]",
+          "apiVersion": "2016-02-01-privatepreview",
+          "properties": {
+            "charset": "utf8",
+            "collation": "utf8_general_ci"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.DBforMySQL/servers/', parameters('dbHost'))]"
+          ]
+        }
+      ]
+    }
+  ]
+}
