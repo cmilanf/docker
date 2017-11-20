@@ -37,7 +37,7 @@ This folder has all the needed items to perform a successful implementation of [
   * **update-azurewebapss-tls.bash**. Once certbot has generated the TLS certificates, this scripts upload and bind them to the Azure WebApp through the Azure AD Service Principal credentials.
   * **var-check.bash**. A simple script that prints used environments variables. Useful just for logging purposes.
 
-# Requeriments
+# Requirements
 
   * Microsoft Azure subscription. Estimated monthly credit needed is about 80 EUR/month
   * Azure WebApp for Linux. Plan S1 or superior. (~62 EUR/month)
