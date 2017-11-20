@@ -403,6 +403,7 @@
             "[concat('Microsoft.DBforMySQL/servers/', parameters('dbHost'))]"
           ],
           "location": "[resourceGroup().location]",
+          "comments": "It is not the best idea to have the database firewall wide open. Consider to change it late to the outbound IP addresses of the Azure WebApp.",
           "name": "AllAllowed",
           "properties": {
             "startIpAddress": "0.0.0.0",
