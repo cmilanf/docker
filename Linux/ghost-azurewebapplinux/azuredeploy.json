@@ -22,7 +22,7 @@
     },
     "dockerCustomImageName": {
         "type": "string",
-        "defaultValue": "cmilanf/ghost-azurewebapplinux:1.17.2",
+        "defaultValue": "cmilanf/ghost-azurewebapplinux:1.17.3",
         "metadata": {
             "description": "Custom Docker Image"
         }
