@@ -70,7 +70,7 @@ Follow the next steps:
   * GHOST_CONTENT. Ghost installation directory, must be in persistent storage. Default: /home/site/wwwroot.
   * GHOST_URL. URL used for accesing the blog. It will be HTTPS regardless of TLS termination. Ex: https://beta.calnus.com
   * DB_TYPE. Database type, that can be 'mysql' or 'sqlite'. For the time being, only 'mysql' is supported in Azure WebApp Linux"
-  * DB_HOST. Hostname of the MySQL database. Ex: calnus-beta.mysql.database.azure.com. This should be created by ARM template.
+  * DB_HOST. Hostname of the MySQL database. Ex: calnus-beta. This should create calnus-beta.mysql.database.azure.com by ARM template.
   * DB_NAME. Name of the MySQL database. This should be created by ARM template.
   * DB_USER. Database username for authentication. This should be created by ARM template.
   * DB_PASS. Password for authenticating with database. WARNING: it will be visible from Azure Portal. This should be created by ARM template.
