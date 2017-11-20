@@ -66,9 +66,9 @@ Follow the next steps:
 
   * WEBAPP_CUSTOM_HOSTNAME. Custom DNS of your webapp. Ex: beta.calnus.com
   * WEBAPP_NAME. The Azure WebApp name. Ex: calnus-beta
-  * RESOURCE_GROUP. The Azure Resource Group naame where the Azure WebApp is deployed.
+  * RESOURCE_GROUP. The Azure Resource Group name where the Azure WebApp is deployed.
   * GHOST_CONTENT. Ghost installation directory, must be in persistent storage. Default: /home/site/wwwroot.
-  * GHOST_URL. URL used for accesing the blog. It will be HTTP instead of HTTPS as Azure WebApp takes care of it. Ex: http://beta.calnus.com
+  * GHOST_URL. URL used for accesing the blog. It will be HTTP instead of HTTPS as Azure WebApp takes care of it. Ex: https://beta.calnus.com
   * DB_TYPE. Database type, that can be 'mysql' or 'sqlite'. For the time being, only 'mysql' is supported in Azure WebApp Linux"
   * DB_HOST. Hostname of the MySQL database. Ex: calnus-beta.mysql.database.azure.com. This should be created by ARM template.
   * DB_NAME. Name of the MySQL database. This should be created by ARM template.
