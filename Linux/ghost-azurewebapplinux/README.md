@@ -5,7 +5,7 @@ This folder has all the needed items to perform a successful implementation of [
   * Uses Azure SQL Database for MySQL (already provided by Prashanth image).
   * Provided fully automated [Let's Encrypt](https://letsencrypt.org/) certificate retrieval, upload and binding to the Azure Web App.
 
-# File description in this repostiory
+# File description
 
   * **.bashrc**. Standard bash shell initialization script with colorized ls alias.
   * **Create-AzreADSP.bat**. Azure Service Principal creation script. This is needed to upload and bind automatically the generated Let's Encrypt certificates to the Azure WebApp.
