@@ -28,24 +28,24 @@ fi
 case $DB_TYPE in
     mysql)
         echo "Setting up Ghost for MySQL..."
-        gosu node ghost config --db="mysql" --dbhost="$DB_HOST" --dbname="$DB_NAME" --dbuser="$DB_USER" --dbpass="$DB_PASS" --url="$GHOST_URL"
-        gosu node ghost config database.connection.port 3306
-        gosu node ghost config database.connection.charset "utf8"
+        gosu node ghost config --no-prompt --db="mysql" --dbhost="$DB_HOST" --dbname="$DB_NAME" --dbuser="$DB_USER" --dbpass="$DB_PASS" --url="$GHOST_URL"
+        gosu node ghost config --no-prompt database.connection.port 3306
+        gosu node ghost config --no-prompt database.connection.charset "utf8"
         ;;
     *)
         echo "Setting up Ghost for SQLite..."
-        gosu node ghost config --db="sqlite3" --url="$GHOST_URL" --dbpath "$GHOST_CONTENT/data/ghost.db"
+        gosu node ghost config --no-prompt --db="sqlite3" --url="$GHOST_URL" --dbpath "$GHOST_CONTENT/data/ghost.db"
         ;;
 esac
 
-gosu node ghost config paths.contentPath "$GHOST_CONTENT"
-gosu node ghost config server.host 127.0.0.1
-gosu node ghost config process local
-gosu node ghost config mail.transport "SMTP"
-gosu node ghost config mail.options.from "$SMTP_FROM"
-gosu node ghost config mail.options.service "$SMTP_SERVICE"
-gosu node ghost config mail.options.auth.user "$SMTP_USER"
-gosu node ghost config mail.options.auth.pass "$SMTP_PASSWORD"
+gosu node ghost config --no-prompt paths.contentPath "$GHOST_CONTENT"
+gosu node ghost config --no-prompt server.host 127.0.0.1
+gosu node ghost config --no-prompt process local
+gosu node ghost config --no-prompt mail.transport "SMTP"
+gosu node ghost config --no-prompt mail.options.from "$SMTP_FROM"
+gosu node ghost config --no-prompt mail.options.service "$SMTP_SERVICE"
+gosu node ghost config --no-prompt mail.options.auth.user "$SMTP_USER"
+gosu node ghost config --no-prompt mail.options.auth.pass "$SMTP_PASSWORD"
 
 # Migration of the SQLite database to MySQL
 /usr/local/bin/migrate-util.bash
