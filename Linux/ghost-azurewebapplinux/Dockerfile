@@ -37,7 +37,14 @@ LABEL WEBAPP_CUSTOM_HOSTNAME="Custom DNS of your webapp. Ex: beta.calnus.com" \
   AZUREAD_SP_PASSWORD="Password of the Azure AD Service Principal." \
   AZUREAD_SP_TENANTID="Tenant ID of the Azure AD Service Principal" \
   HTTP_CUSTOM_ERRORS="Enable NGINX friendly 404 and 50x errors" 
-  
+
+# ghost-cli 1.4.1 fixes a bug that causes the command to not honor the --no-prompt
+# argument, something critical for us :) We force upgrade to 1.4.1 if not already present
+# https://github.com/TryGhost/Ghost-CLI/issues/563
+# GHOST_CLI_VERSION is taken from base image
+RUN if $(dpkg --compare-versions "1.4.1" "gt" "$GHOST_CLI_VERSION"); then npm un -g ghost-cli; npm i -g ghost-cli@1.4.1; fi \
+  && ghost -v
+
 # Do not worry about root password being widely known, there will be no external
 # connection to the container. Also, I couldn't help but using linuxlogo, just love it
 RUN apt-get -y update \
