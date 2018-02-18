@@ -3,7 +3,7 @@
 # Logging explined at: https://unix.stackexchange.com/questions/145651/using-exec-and-tee-to-redirect-logs-to-stdout-and-a-log-file-in-the-same-time
 exec &> >(tee -a /home/LogFiles/update-azurewebapp-tls.log)
 date
-
+source /home/bin/var-set.sh
 echo "update-azurewebapp-tls.bash: Preparing certificate for Azure Webapp import..."
 if [ -f /home/letsencrypt/live/$WEBAPP_CUSTOM_HOSTNAME/fullchain.pem ]; then
     # If the certifcate exists, then let's get his thumbprint

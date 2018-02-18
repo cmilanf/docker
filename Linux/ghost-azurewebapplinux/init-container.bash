@@ -4,9 +4,6 @@
 exec &> >(tee -a /home/LogFiles/init-container.log)
 date
 
-# Variable checking, just to test if APPSETTINGS -> ENV was correctly performed
-/usr/local/bin/var-check.bash
-
 # Directory creation must be here rather than in the Dockerfile.
 # This is due to /home being in a CIFS share pointing to Azure Storage,
 # so it only exist AFTER full boot.
@@ -14,7 +11,11 @@ mkdir -v -p /var/run/sshd
 mkdir -v -p /home/LogFiles/letsencrypt
 mkdir -v -p /home/LogFiles/supervisor
 mkdir -v -p /home/letsencrypt/workdir
+mkdir -v -p /home/bin
 mkdir -v -p "$GHOST_CONTENT"
+
+# Variable checking, just to test if APPSETTINGS -> ENV was correctly performed
+/usr/local/bin/var-check.bash
 
 # Prepare the nginx configuration
 sed -i -e "s#{{WEBAPP_CUSTOM_HOSTNAME}}#$WEBAPP_CUSTOM_HOSTNAME#g" /etc/nginx/sites-available/default
