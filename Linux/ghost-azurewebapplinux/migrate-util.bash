@@ -14,7 +14,11 @@ if ! [ "$(ls -A $GHOST_CONTENT)" ]; then
 			tar -hcC "$(dirname "$src")" "$(basename "$src")" | tar -xC "$(dirname "$target")"
 		fi
 	done
+	# New setup will create a initializate the Ghost database
 	gosu node knex-migrator-migrate --init --mgpath "$GHOST_INSTALL/current"
+else
+	# Existing setup detected, let's upgrade the database without erasing it
+	gosu node knex-migrator-migrate --mgpath "$GHOST_INSTALL/current"
 fi
 echo "************migration ended***********"
 [ -e "/home/site/config.production.json" ] && cp "/home/site/config.production.json" "/var/lib/ghost/config.production.json"
