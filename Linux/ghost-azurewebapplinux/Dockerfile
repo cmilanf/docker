@@ -48,7 +48,7 @@ RUN if $(dpkg --compare-versions "1.4.1" "gt" "$GHOST_CLI_VERSION"); then npm un
 # Do not worry about root password being widely known, there will be no external
 # connection to the container. Also, I couldn't help but using linuxlogo, just love it
 RUN apt-get -y update \
-  && apt-get install -y --no-install-recommends lsof at openssl openssh-server supervisor cron git nano jq less linuxlogo unzip \
+  && apt-get install -y --no-install-recommends lsb-release lsof at openssl openssh-server supervisor cron git nano jq less linuxlogo unzip \
   && echo "root:Docker!" | chpasswd \
   && echo "30 * * * * /usr/bin/linuxlogo -L 11 -u > /etc/motd" > /etc/cron.d/linuxlogo \
   && chmod 755 /etc/cron.d/linuxlogo \
@@ -57,11 +57,12 @@ RUN apt-get -y update \
 # I plan on running Let's Encrypt certbot in the container, so the Azure CLI tool
 # will come handy for updating the TLS certificate.
 RUN set -ex \
-  && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ wheezy main" | \
-  tee /etc/apt/sources.list.d/azure-cli.list \
+  && AZ_REPO=$(lsb_release -cs) \
+  && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
+    tee /etc/apt/sources.list.d/azure-cli.list \
+  && curl -L https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
   && echo "deb http://ftp.debian.org/debian jessie-backports main" | \
   tee /etc/apt/sources.list.d/jessie-backports.list \
-  && apt-key adv --keyserver packages.microsoft.com --recv-keys 417A0893 \
   && apt-get -y --no-install-recommends install apt-transport-https net-tools \
   && apt-get -y update \
   && apt-get -y upgrade \
