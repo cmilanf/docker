@@ -10,7 +10,8 @@ LABEL title="Classic ASP Chat Docker" `
     contrib4="https://github.com/stephenmcd/aspchat" `
     url="https://calnus.com" `
     twitter="@cmilanf" `
-    usage="docker run -it --rm -p 80:80 -p 443:443 cmilanf/aspchat"
+    usage="docker run -it --rm -p 80:80 -p 443:443 cmilanf/aspchat" `
+    thanksto1="Beatriz Sebastián Peña"
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; $VerbosePreference = 'Continue'; "]
 
