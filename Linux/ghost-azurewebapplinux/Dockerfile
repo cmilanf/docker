@@ -74,9 +74,9 @@ RUN set -ex \
 
 # Workaround for issue with Azure database for MySQL - will be removed later
 # Credit to: Prashanth Madi <prashanthrmadi@gmail.com> https://github.com/prashanthmadi/azure-ghost/
-RUN cd current \
-  && npm install mysqljs/mysql \
-  && cd /var/lib/ghost
+#RUN cd current \
+#  && npm install mysqljs/mysql \
+#  && cd /var/lib/ghost
 
 COPY sshd_config /etc/ssh/
 COPY init-container.bash /usr/local/bin/
