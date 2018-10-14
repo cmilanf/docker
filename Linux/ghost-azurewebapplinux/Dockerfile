@@ -1,15 +1,17 @@
 # For the time being, source Ghost image is based on Debian 8.9 "Jessie"
 # In order to understand this Dockerfile it is mandatory to look also the
 # base one at https://github.com/docker-library/ghost/blob/master/1/debian/Dockerfile
-FROM ghost:{{TAG}}
+ARG VERSION
+FROM ghost:${VERSION}
+
+ARG VERSION
 
 LABEL title="Ghost for Microsoft Azure App Service Linux - Let's Encrypt enabled" \
   maintainer="Carlos Milán Figueredo" \
   email="cmilanf@hispamsx.org" \
-  version="{{TAG}}" \
+  version="${VERSION}" \
   contrib1="https://hub.docker.com/_/ghost/" \
   contrib2="Prashanth Madi <prashanthrmadi@gmail.com> https://github.com/prashanthmadi/azure-ghost/" \
-  contrib3="FART - Find and Replace Text command line utility. A grep-like utility for win32. http://fart-it.sourceforge.net/" \
   url1="https://calnus.com" \
   url2="http://www.hispamsx.org" \
   bbs="telnet://bbs.hispamsx.org" \
@@ -46,10 +48,12 @@ RUN if $(dpkg --compare-versions "1.4.1" "gt" "$GHOST_CLI_VERSION"); then npm un
   && ghost -v
 
 # Do not worry about root password being widely known, there will be no external
-# connection to the container. Also, I couldn't help but using linuxlogo, just love it
+# connection to the container. The use of sudo has become mandatory for ghost-cli.
+# Also, I couldn't help but using linuxlogo, just love it.
 RUN apt-get -y update \
-  && apt-get install -y --no-install-recommends lsb-release lsof at openssl openssh-server supervisor cron git nano jq less linuxlogo unzip \
+  && apt-get install -y --no-install-recommends lsb-release lsof at openssl openssh-server supervisor cron git nano jq less linuxlogo unzip sudo \
   && echo "root:Docker!" | chpasswd \
+  && echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
   && echo "30 * * * * /usr/bin/linuxlogo -L 11 -u > /etc/motd" > /etc/cron.d/linuxlogo \
   && chmod 755 /etc/cron.d/linuxlogo \
   && /usr/bin/linuxlogo -L 11 -u > /etc/motd
