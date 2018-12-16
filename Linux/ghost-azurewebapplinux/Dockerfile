@@ -1,4 +1,4 @@
-# For the time being, source Ghost image is based on Debian 8.9 "Jessie"
+# For the time being, source Ghost image is based on Debian 9.6 "Stretch"
 # In order to understand this Dockerfile it is mandatory to look also the
 # base one at https://github.com/docker-library/ghost/blob/master/1/debian/Dockerfile
 ARG VERSION
@@ -61,17 +61,17 @@ RUN apt-get -y update \
 # I plan on running Let's Encrypt certbot in the container, so the Azure CLI tool
 # will come handy for updating the TLS certificate.
 RUN set -ex \
-  && AZ_REPO=$(lsb_release -cs) \
-  && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
+  && RELEASE=$(lsb_release -cs) \
+  && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ ${RELEASE} main" | \
     tee /etc/apt/sources.list.d/azure-cli.list \
   && curl -L https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-  && echo "deb http://ftp.debian.org/debian jessie-backports main" | \
-  tee /etc/apt/sources.list.d/jessie-backports.list \
+  && echo "deb http://ftp.debian.org/debian ${RELEASE}-backports main" | \
+  tee /etc/apt/sources.list.d/${RELEASE}-backports.list \
   && apt-get -y --no-install-recommends install apt-transport-https net-tools \
   && apt-get -y update \
   && apt-get -y upgrade \
   && apt-get -y --no-install-recommends install azure-cli \
-  && apt-get -y --no-install-recommends install certbot nginx -t jessie-backports \
+  && apt-get -y --no-install-recommends install certbot nginx -t ${RELEASE}-backports \
   && apt-get -y autoremove \
   && apt-get -y autoclean \
   && set +ex
